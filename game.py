@@ -88,22 +88,72 @@ def is_game_over(board):
     return True
 
 
+def computer_player(board , color):
+    pass
+
+def human_player(board,color):
+    while True:
+        his_move=input("Your turn enter your move row and column numbers separated by space")
+        x, y = map(int, his_move.split())
+        if is_on_board(x, y):
+           if is_found_tiles_to_be_flipped(board, color, x, y):
+               return x, y
+           else:
+               print("Your move cannot flip any opposing disk You miss your turn :( ")
+               return None
+        else:
+            print("Invalid move. Try again.")
+
+def othello_game():
+    board = initiate_board()
+    print("Welcome In Othello Game :) ")
+    while True:
+        color_choice = input("Do you want to be black or white enter B or w ").upper()
+        if color_choice == 'B':
+            color_of_human = 'B'
+            color_of_computer = 'W'
+            break
+        elif color_choice == 'W':
+            color_of_human = 'W'
+            color_of_computer = 'B'
+            break
+        else:
+            print("Invalid Choice")
+            continue
+
+    if color_of_human == 'B':
+        print_board(board)
+        while not is_game_over(board):
+            human_move = human_player(board, color_of_human)
+            if human_move is not None:
+                make_move(board, color_of_human, human_move[0], human_move[1])
+                print_board(board)
+            if is_game_over(board):
+                break
+            computer_move = computer_player(board, color_of_computer)
+            if computer_move is not None:
+                make_move(board, color_of_computer, computer_move[0], computer_move[1])
+                print_board(board)
+    else:
+        print_board(board)
+        while not is_game_over(board):
+            computer_move = computer_player(board, color_of_computer)
+            if computer_move is not None:
+                make_move(board, color_of_computer, computer_move[0], computer_move[1])
+                print_board(board)
+            if is_game_over(board):
+                break
+            human_move = human_player(board, color_of_human)
+            if human_move is not None:
+                make_move(board, color_of_human, human_move[0], human_move[1])
+                print_board(board)
+
+    counted_disks = get_score_of_board(board)
+    if counted_disks['B'] > counted_disks['W']:
+        print("Black wins!")
+    elif counted_disks['B'] < counted_disks['W']:
+        print("White wins!")
+    else:
+        print("It's a tie!")
 # Test
-main_board = initiate_board()
-print(get_score_of_board(main_board)['B'])
-print(get_score_of_board(main_board)['W'])
-print_board(main_board)
-
-make_move(main_board, 'W', 5, 3)
-print_board(main_board)
-
-make_move(main_board, 'B', 5, 4)
-print_board(main_board)
-
-make_move(main_board, 'W', 3, 5)
-print_board(main_board)
-
-print(is_game_over(main_board))
-
-print(get_score_of_board(main_board)['B'])
-print(get_score_of_board(main_board)['W'])
+othello_game()
