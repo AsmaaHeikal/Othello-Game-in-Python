@@ -154,6 +154,6 @@ def othello_game():
     elif counted_disks['B'] < counted_disks['W']:
         print("White wins!")
     else:
-        print("It's a tie!")
+        print("gameisover !")
 # Test
 othello_game()
