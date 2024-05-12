@@ -78,6 +78,25 @@ def get_score_of_board(board):
     return {'B': b_score, 'W': w_score}
 
 
+# return array with all possible moves
+def get_possible_moves(board, tile):
+    possible_moves = []
+    for i in range(8):
+        for j in range(8):
+            if is_found_tiles_to_be_flipped(board, tile, i, j):
+                possible_moves.append([i, j])
+    return possible_moves
+
+
+# print a copy of the board with all possible moves
+def print_possible_moves(board, tile):
+    possible_moves = get_possible_moves(board, tile)
+    board_copy = [row[:] for row in board]
+    for i, j in possible_moves:
+        board_copy[i][j] = '.'
+    print_board(board_copy)
+
+
 def is_game_over(board):
     if get_score_of_board(board)['B'] == 30 or get_score_of_board(board)['W'] == 30:
         return True
