@@ -1,3 +1,6 @@
+import math;
+boardSize = 8
+
 def initiate_board():
     board = [[' ' for _ in range(8)] for _ in range(8)]
     board[3][3] = 'W'
@@ -8,10 +11,24 @@ def initiate_board():
 
 
 def print_board(board):
-    print('-' * 30)
+
+    nCol =0
     for row in board:
-        print(' | '.join(row))
-        print('-' * 30)
+    # Iterate over each element in the row
+        for col in row:
+            print('|',col, end=' ')
+            nCol +=1
+        print('\n')
+        nCol = 0
+        # print()
+# def print_board(board):
+#     # print('__' * 30)
+#     for row in board:
+#         for col in row:
+#             print('|', col ,'|')
+#             # print('__' * 30)
+   
+        
 
 
 def is_on_board(x, y):
@@ -19,13 +36,14 @@ def is_on_board(x, y):
 
 
 def is_found_tiles_to_be_flipped(board, tile, row, col):
-    if board[row][col] != ' ' or not is_on_board(row, col):
+    if board[row][col] =='B' or board[row][col] == 'W' or not is_on_board(row, col):
         return False
     board[row][col] = tile
     if tile == 'B':
         other_tile = 'W'
     else:
         other_tile = 'B'
+
     flipped_tiles = []
     for xdir, ydir in [[0, 1],  [1, 0],  [0, -1],  [-1, 0]]:
         x, y = row, col
@@ -50,6 +68,8 @@ def is_found_tiles_to_be_flipped(board, tile, row, col):
                     if x == row and y == col:
                         break
                     flipped_tiles.append([x, y])
+                    # print("tiles")
+                    # print([x,y])
     board[row][col] = ' '
     if len(flipped_tiles) == 0:
         return False
@@ -107,8 +127,170 @@ def is_game_over(board):
     return True
 
 
+# assign score to each valid move cell
+# def evaluationFunction(board, color):
+#     myboard = board
+#     for i in range(boardSize):
+#         for j in range(boardSize):
+#             if(is_found_tiles_to_be_flipped(board,color,i,j)):
+#                 myboard[i][j] = len(is_found_tiles_to_be_flipped(board,color,i,j))
+
+    
+#     # print_board(myboard)
+#     return myboard
+def evaluationFunction(board, color, i,j):
+    myboard = board
+    flipped_list = is_found_tiles_to_be_flipped(board,color,i,j)
+    #if list of flipped items returned indecies
+    if flipped_list:
+        myboard[i][j]= len(is_found_tiles_to_be_flipped(board,color,i,j))
+        return myboard[i][j]
+    
+    print("printo",color)
+    print_board(myboard)
+    return 1
+        
+    # else:
+    #     print("printo")
+    #     print_board(myboard)
+    
+    # # print(board[i][j])
+    # return 1
+    
+    # print_board(myboard)
+
+def ScoredBoard(board, color):
+    myboard = board
+    for i in range(boardSize):
+        for j in range(boardSize):
+            if(is_found_tiles_to_be_flipped(board,color,i,j)):
+                myboard[i][j] = len(is_found_tiles_to_be_flipped(board,color,i,j)) + len(get_possible_moves(board,color))
+                
+    return myboard
+    
+# def recursiveAlgo(alpha, validMoves, index):
+#     for j in range(index, boardSize):
+#         print(j)
+#         # alpha = max(alpha, evaluationFunction(board,color, m[0], m[1]))
+#         alpha = max(alpha, validMoves[j])
+#         # print(len(validMoves))
+#         # print(alpha)
+
+def get_color(isComputer):
+    if isComputer == 1:
+        return 'W'
+    else:
+        return 'B'
+
+def opposite_color(color):
+    if color == 'B':
+        return 'W'
+    elif color == 'W':
+        return 'B'
+    
+
+def boardEvaluation(board, color):
+    score = get_score_of_board(board)[color] - get_score_of_board(board)[opposite_color(color)]
+    return score
+
+
+
+def alpha_beta(board, color,depth, compMove=[[-1,-1]], compScore = -math.inf, move=[-1,-1],  alpha=-math.inf, beta = math.inf, isComputer=1):   
+    validMoves = get_possible_moves(board, get_color(isComputer))
+    if make_move(board, color, move[0], move[1]) == False and move != [-1,-1]:
+        return -math.inf
+
+    if depth <= 0 or is_game_over(board)  :#or game over
+        # print("board ev", boardEvaluation(board, 'W'))
+        # print_board(board)
+        return boardEvaluation(board, color)
+
+    if isComputer == 1 :
+        for i in validMoves:
+            # print("move white happen \n",depth,i)
+            myboard = [row[:] for row in board]
+            compMove.extend([i])
+            ev = alpha_beta(myboard,'W', depth - 1, compMove,compScore,[i[0],i[1]], alpha, beta, 0)
+            alpha = max(alpha, ev)
+            if beta <= alpha:
+                break
+            compScore = max(ev, compScore )
+            compMove.append(compScore)
+            compMove.append("_")
+
+
+
+    elif isComputer == 0 :
+        for i in validMoves:
+            # print("move black happen \n", depth,i)
+            myboard = [row[:] for row in board]
+            ev = alpha_beta(myboard,'B', depth -1 , compMove,compScore,[i[0],i[1]],alpha, beta, 1)
+            beta = min(beta, ev)
+            if beta <= alpha:
+                break;
+    return ev
+    
+
+
+
+# make_move(board,'W', r[0],r[1])
+# board[r[0]][r[1]] = 'W'
+# print_board(myboard)
+# print(get_possible_moves(board, 'W'))
+# print_board(ScoredBoard(board, 'B'))
+
+# alpha = - math.inf
+#     beta = math.inf
+
+
+def getCompMove(board, diffLevel):
+    moves = []
+    myboard = [row[:] for row in board]    
+    alpha_beta(myboard,'W', diffLevel, moves)
+    maxiScore = -1000
+
+    for i in range(len(moves)):
+        if isinstance(moves[i], int):
+            maxiScore = max(maxiScore, moves[i])
+            index = i
+
+    result = []
+    temp = []
+
+    for item in moves:
+        if item == '_':
+            result.append(temp)
+            temp = []
+        else:
+            temp.append(item)
+
+    result.append(temp)  
+
+    cnt = -1
+    index = 0
+    for list in result:
+        cnt +=1
+        if len(list) > 1:
+            size = len(list)
+            if maxiScore < list[size-1]:
+                maxiScore = list[size - 1]
+                index = cnt
+
+    return result[index][0]
+
+
+
 def computer_player(board , color):
-    pass
+    while True:
+        
+        
+        # his_move=input("Your turn enter your move row and column numbers separated by space")
+        if is_on_board(x, y):
+           if is_found_tiles_to_be_flipped(board, color, x, y):
+               return x, y
+
+
+
 
 def human_player(board,color):
     while True:
@@ -116,6 +298,8 @@ def human_player(board,color):
         x, y = map(int, his_move.split())
         if is_on_board(x, y):
            if is_found_tiles_to_be_flipped(board, color, x, y):
+               print("printooooo")
+               print(is_found_tiles_to_be_flipped(board, color, x, y))
                return x, y
            else:
                print("Your move cannot flip any opposing disk You miss your turn :( ")
@@ -139,40 +323,47 @@ def othello_game():
         else:
             print("Invalid Choice")
             continue
-
+    
     if color_of_human == 'B':
         print_board(board)
+        print(get_possible_moves(board, color_of_human))
         while not is_game_over(board):
-            human_move = human_player(board, color_of_human)
-            if human_move is not None:
-                make_move(board, color_of_human, human_move[0], human_move[1])
-                print_board(board)
-            if is_game_over(board):
-                break
-            computer_move = computer_player(board, color_of_computer)
-            if computer_move is not None:
-                make_move(board, color_of_computer, computer_move[0], computer_move[1])
-                print_board(board)
-    else:
-        print_board(board)
-        while not is_game_over(board):
-            computer_move = computer_player(board, color_of_computer)
-            if computer_move is not None:
-                make_move(board, color_of_computer, computer_move[0], computer_move[1])
-                print_board(board)
-            if is_game_over(board):
-                break
             human_move = human_player(board, color_of_human)
             if human_move is not None:
                 make_move(board, color_of_human, human_move[0], human_move[1])
                 print_board(board)
 
-    counted_disks = get_score_of_board(board)
-    if counted_disks['B'] > counted_disks['W']:
-        print("Black wins!")
-    elif counted_disks['B'] < counted_disks['W']:
-        print("White wins!")
-    else:
-        print("gameisover !")
+                print("moves")
+                print(get_possible_moves(board, color_of_human))
+
+            if is_game_over(board):
+                break
+            computer_move = getCompMove(board, 5)
+            if computer_move is not None:
+                make_move(board, color_of_computer, computer_move[0], computer_move[1])
+                print_board(board)
+    # else:
+    #     print_board(board)
+    #     while not is_game_over(board):
+    #         computer_move = computer_player(board, color_of_computer)
+    #         if computer_move is not None:
+    #             make_move(board, color_of_computer, computer_move[0], computer_move[1])
+    #             print_board(board)
+    #         if is_game_over(board):
+    #             break
+    #         human_move = human_player(board, color_of_human)
+    #         if human_move is not None:
+    #             make_move(board, color_of_human, human_move[0], human_move[1])
+    #             print_board(board)
+
+    # counted_disks = get_score_of_board(board)
+    # if counted_disks['B'] > counted_disks['W']:
+    #     print("Black wins!")
+    # elif counted_disks['B'] < counted_disks['W']:
+    #     print("White wins!")
+    # else:
+    #     print("gameisover !")
 # Test
 othello_game()
+print(getCompMove(initiate_board(), 5))
+
