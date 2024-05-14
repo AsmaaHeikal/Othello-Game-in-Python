@@ -1,8 +1,9 @@
 import math
 
 boardSize = 8
-human_discs=0
-computer_discs=0
+human_discs = 0
+computer_discs = 0
+
 
 def initiate_board():
     board = [[' ' for _ in range(8)] for _ in range(8)]
@@ -184,7 +185,7 @@ def getCompMove(board, diffLevel):
     print(len(moves))
     maxiScore = -1000
     if len(moves) <= 0:
-        return [-1,-1]
+        return [-1, -1]
     for i in range(len(moves)):
         if isinstance(moves[i], int):
             maxiScore = max(maxiScore, moves[i])
@@ -204,7 +205,7 @@ def getCompMove(board, diffLevel):
 
     cnt = -1
     index = 0
-    
+
     for list in result:
         cnt += 1
         if len(list) > 1:
@@ -212,25 +213,23 @@ def getCompMove(board, diffLevel):
             if maxiScore < list[size - 1]:
                 maxiScore = list[size - 1]
                 index = cnt
-    
-    
-    return result[index][0]
 
+    return result[index][0]
 
 def human_player(board, color):
     while True:
+        possible_moves = get_possible_moves(board, color)
         print_possible_moves(board, color)
-        print(get_possible_moves(board, color))
-        his_move = input("Your turn enter your move row and column numbers separated by space : ")
-        x, y = map(int, his_move.split())
-        if is_on_board(x, y):
-            if is_found_tiles_to_be_flipped(board, color, x, y):
+        print(possible_moves)
+        his_move = input("Your turn, enter your move (row and column numbers separated by space): ")
+        try:
+            x, y = map(int, his_move.split())
+            if (x, y) in possible_moves:
                 return x, y
             else:
-                print("Your move cannot flip any opposing disk You miss your turn :( ")
-                return None
-        else:
-            print("Invalid move. Try again.")
+                print("Invalid move please choose a move from the list of possible moves.")
+        except ValueError:
+            print("Invalid input please enter row and column numbers separated by space.")
 
 
 def othello_game():
@@ -257,25 +256,26 @@ def othello_game():
             computer_move = getCompMove(board, 3)
         elif diff_level == '5':
             computer_move = getCompMove(board, 5)
-        if computer_move != [-1,-1]:
+        if computer_move != [-1, -1]:
             print("Computer Move : ", computer_move)
             make_move(board, color_of_computer, computer_move[0], computer_move[1])
-            computer_discs+=1
+            computer_discs += 1
         else:
             print("No moves for computer")
             continue
             # no computer valid moves
     else:
         compScore = get_score_of_board(board)['W']
-        humanScore= get_score_of_board(board)['B']
+        humanScore = get_score_of_board(board)['B']
         if compScore > humanScore:
             winner = "Computer "
-        else: 
+        else:
             winner = "Human"
         print("Game over :( ")
         print("Computer Score : ", compScore)
         print("Human Score : ", humanScore)
-        print(winner ,"is the winner :D")
+        print(winner, "is the winner :D")
+
 
 # Test
 othello_game()
