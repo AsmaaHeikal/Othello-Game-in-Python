@@ -244,6 +244,8 @@ def human_player(board, color):
 
 
 def othello_game():
+    global human_discs
+    global computer_discs
     board = initiate_board()
     print("Welcome In Othello Game :) ")
     diff_level = input("Enter Difficulty Level (1,3,5) : ")
