@@ -273,6 +273,8 @@ def othello_game():
         else: 
             winner = "Human"
         print("Game over :( ")
+        print("Computer Score : ", compScore)
+        print("Human Score : ", humanScore)
         print(winner ,"is the winner :D")
 
 # Test
