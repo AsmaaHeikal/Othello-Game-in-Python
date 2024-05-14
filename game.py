@@ -1,7 +1,8 @@
 import math
 
 boardSize = 8
-
+human_discs=0
+computer_discs=0
 
 def initiate_board():
     board = [[' ' for _ in range(8)] for _ in range(8)]
@@ -104,7 +105,7 @@ def print_possible_moves(board, tile):
 
 
 def is_game_over(board):
-    if get_score_of_board(board)['B'] == 30 or get_score_of_board(board)['W'] == 30:
+    if human_discs == 30 or computer_discs == 30:
         return True
     for i in range(8):
         for j in range(8):
@@ -257,6 +258,7 @@ def othello_game():
         human_move = human_player(board, color_of_human)
         if human_move is not None:
             make_move(board, color_of_human, human_move[0], human_move[1])
+            human_discs += 1
         if is_game_over(board):
             break
         if diff_level == '1':
@@ -267,6 +269,7 @@ def othello_game():
             computer_move = getCompMove(board, 5)
         if computer_move is not None:
             make_move(board, color_of_computer, computer_move[0], computer_move[1])
+            computer_discs+=1
             print_possible_moves(board, color_of_human)
             print(get_possible_moves(board, color_of_human))
 
