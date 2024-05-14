@@ -114,19 +114,6 @@ def is_game_over(board):
     return True
 
 
-def evaluationFunction(board, color, i, j):
-    myboard = board
-    flipped_list = is_found_tiles_to_be_flipped(board, color, i, j)
-    # if list of flipped items returned indecies
-    if flipped_list:
-        myboard[i][j] = len(is_found_tiles_to_be_flipped(board, color, i, j))
-        return myboard[i][j]
-
-    print("printo", color)
-    print_board(myboard)
-    return 1
-
-
 def ScoredBoard(board, color):
     myboard = board
     for i in range(boardSize):
@@ -164,8 +151,6 @@ def alpha_beta(board, color, depth, compMove=[[-1, -1]], compScore=-math.inf, mo
         return -math.inf
 
     if depth <= 0 or is_game_over(board):  # or game over
-        # print("board ev", boardEvaluation(board, 'W'))
-        # print_board(board)
         return boardEvaluation(board, color)
 
     if isComputer == 1:
@@ -178,7 +163,7 @@ def alpha_beta(board, color, depth, compMove=[[-1, -1]], compScore=-math.inf, mo
             if beta <= alpha:
                 break
             compScore = max(ev, compScore)
-            compMove.append(compScore)
+            compMove.append(ev)
             compMove.append("_")
 
     elif isComputer == 0:
@@ -189,15 +174,17 @@ def alpha_beta(board, color, depth, compMove=[[-1, -1]], compScore=-math.inf, mo
             beta = min(beta, ev)
             if beta <= alpha:
                 break
-    return ev
+    return 0
 
 
 def getCompMove(board, diffLevel):
     moves = []
     myboard = [row[:] for row in board]
     alpha_beta(myboard, 'W', diffLevel, moves)
+    print(len(moves))
     maxiScore = -1000
-
+    if len(moves) <= 0:
+        return [-1,-1]
     for i in range(len(moves)):
         if isinstance(moves[i], int):
             maxiScore = max(maxiScore, moves[i])
@@ -217,6 +204,7 @@ def getCompMove(board, diffLevel):
 
     cnt = -1
     index = 0
+    
     for list in result:
         cnt += 1
         if len(list) > 1:
@@ -224,17 +212,19 @@ def getCompMove(board, diffLevel):
             if maxiScore < list[size - 1]:
                 maxiScore = list[size - 1]
                 index = cnt
-
+    
+    
     return result[index][0]
 
 
 def human_player(board, color):
     while True:
+        print_possible_moves(board, color)
+        print(get_possible_moves(board, color))
         his_move = input("Your turn enter your move row and column numbers separated by space : ")
         x, y = map(int, his_move.split())
         if is_on_board(x, y):
             if is_found_tiles_to_be_flipped(board, color, x, y):
-                # print(is_found_tiles_to_be_flipped(board, color, x, y))
                 return x, y
             else:
                 print("Your move cannot flip any opposing disk You miss your turn :( ")
@@ -254,28 +244,36 @@ def othello_game():
         return
     color_of_human = 'B'
     color_of_computer = 'W'
-    print_possible_moves(board, color_of_human)
-    print(get_possible_moves(board, color_of_human))
     while not is_game_over(board):
         human_move = human_player(board, color_of_human)
         if human_move is not None:
             make_move(board, color_of_human, human_move[0], human_move[1])
             human_discs += 1
         if is_game_over(board):
-            break
+            continue
         if diff_level == '1':
             computer_move = getCompMove(board, 1)
         elif diff_level == '3':
             computer_move = getCompMove(board, 3)
         elif diff_level == '5':
             computer_move = getCompMove(board, 5)
-        if computer_move is not None:
+        if computer_move != [-1,-1]:
             print("Computer Move : ", computer_move)
             make_move(board, color_of_computer, computer_move[0], computer_move[1])
             computer_discs+=1
-            print_possible_moves(board, color_of_human)
-            print(get_possible_moves(board, color_of_human))
-
+        else:
+            print("No moves for computer")
+            continue
+            # no computer valid moves
+    else:
+        compScore = get_score_of_board(board)['W']
+        humanScore= get_score_of_board(board)['B']
+        if compScore > humanScore:
+            winner = "Computer "
+        else: 
+            winner = "Human"
+        print("Game over :( ")
+        print(winner ,"is the winner :D")
 
 # Test
 othello_game()
