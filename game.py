@@ -234,7 +234,7 @@ def human_player(board, color):
         x, y = map(int, his_move.split())
         if is_on_board(x, y):
             if is_found_tiles_to_be_flipped(board, color, x, y):
-                print(is_found_tiles_to_be_flipped(board, color, x, y))
+                # print(is_found_tiles_to_be_flipped(board, color, x, y))
                 return x, y
             else:
                 print("Your move cannot flip any opposing disk You miss your turn :( ")
@@ -268,6 +268,7 @@ def othello_game():
         elif diff_level == '5':
             computer_move = getCompMove(board, 5)
         if computer_move is not None:
+            print("Computer Move : ", computer_move)
             make_move(board, color_of_computer, computer_move[0], computer_move[1])
             computer_discs+=1
             print_possible_moves(board, color_of_human)
