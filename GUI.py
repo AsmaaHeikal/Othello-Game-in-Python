@@ -183,7 +183,7 @@ class OthelloGUI:
             for j in range(8):
                 if is_found_tiles_to_be_flipped(board, 'B', i, j) or is_found_tiles_to_be_flipped(board, 'W', i, j):
                     return False
-        return True if not get_possible_moves(board, "B") and not get_possible_moves(board, "W") else False
+        return True
 
     def boardEvaluation(self, board):
         score = get_score_of_board(board)["W"] - get_score_of_board(board)["B"]
@@ -191,6 +191,7 @@ class OthelloGUI:
 
     def Controller(self):
         if self.is_game_over(self.board):
+            # Determine the winner and display the result
             winner_text = ""
             compScore = get_score_of_board(self.board)['W']
             humanScore = get_score_of_board(self.board)['B']
@@ -224,11 +225,13 @@ class OthelloGUI:
                 self.draw_board()
                 self.update_scores()
                 self.computer_discs += 1
+                # Check if human player has valid moves
                 if get_possible_moves(self.board, "B"):
                     self.current_turn = "B"
                     self.highlight_possible_moves()
                     self.Controller()
-                elif not get_possible_moves(self.board, "B") and get_possible_moves(self.board, "W"):
+                else:
+                    # Human has no valid moves, end the game
                     self.current_turn = "W"
                     self.Controller()
                     # else:
