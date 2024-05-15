@@ -172,11 +172,12 @@ class OthelloGUI:
         self.white_label.config(text=white_score_text, font=("Helvetica", 16))
 
     def highlight_possible_moves(self):
-        possible_moves = get_possible_moves(self.board, self.current_turn)
-        for move in possible_moves:
-            x, y = move
-            self.canvas.create_oval(y * 62.5 + 15, x * 62.5 + 15, (y + 1) * 62.5 - 15, (x + 1) * 62.5 - 15,
-                                    fill='gray', outline='gray')
+        if not self.is_game_over(self.board):
+            possible_moves = get_possible_moves(self.board, self.current_turn)
+            for move in possible_moves:
+                x, y = move
+                self.canvas.create_oval(y * 62.5 + 15, x * 62.5 + 15, (y + 1) * 62.5 - 15, (x + 1) * 62.5 - 15,
+                                        fill='gray', outline='gray')
 
     def is_game_over(self, board):
         if self.human_discs == 30 or self.computer_discs == 30:
@@ -240,6 +241,8 @@ class OthelloGUI:
                 #     print("Game over")
 
     def human_turn(self, event):
+        if self.is_game_over(self.board):  # Check if the game is over
+            return
         if self.current_turn == "B":
             possible_moves = get_possible_moves(self.board, "B")
             if not possible_moves:
