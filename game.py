@@ -230,17 +230,11 @@ def human_player(board, color):
             print("Invalid input. Please enter two numbers separated by a space.")
             continue
 
-        if not is_on_board(x, y):
-            print("Invalid move. Coordinates are out of board range. Try again.")
-            continue
-
         if (x, y) in [tuple(move) for move in possible_moves]:
             return x, y
         else:
             print("Invalid move. Your move cannot flip any opposing disk. Try again.")
             continue
-
-
 
 def othello_game():
     global human_discs
