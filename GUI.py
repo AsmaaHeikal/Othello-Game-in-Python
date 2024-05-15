@@ -122,12 +122,12 @@ class OthelloGUI:
         self.difficulty_menu = tk.OptionMenu(
         self.difficulty_frame, self.difficulty_var, *self.difficulty_options)
         self.difficulty_menu.config(font=("Helvetica", 15))
-        self.difficulty_menu.pack(side=tk.LEFT, padx=(15, 15))  # Reduced padding for space
+        self.difficulty_menu.pack(side=tk.LEFT, padx=(15, 15)) 
 
         self.start_button = tk.Button(
         self.main_frame, text="Start Game", command=self.start_game)
         self.start_button.config(font=("Helvetica", 18))
-        self.start_button.pack(pady=(60, 40))  # Increased padding for space
+        self.start_button.pack(pady=(60, 40))  
 
 
 
@@ -150,7 +150,6 @@ class OthelloGUI:
         self.draw_board()
         self.highlight_possible_moves()
         self.Controller()
-        # self.canvas.bind('<Button-1>', self.handle_click)
 
     def draw_board(self):
         for i in range(boardSize):
@@ -206,7 +205,7 @@ class OthelloGUI:
                 winner_text = "Computer wins"
             else:
                 winner_text = "It's a tie"
-        # Create a label to display the winner message
+
             self.winner_label = tk.Label(
                 self.master, text=winner_text, font=("Helvetica", 20), fg="red")
             self.winner_label.pack()
@@ -220,7 +219,6 @@ class OthelloGUI:
             print("Computer's turn")
             self.master.update_idletasks()
             self.master.update()
-            # Adjust delay time (1000 milliseconds = 1 second)
             self.canvas.after(1000)
 
             computer_move = self.get_computer_move()
@@ -233,25 +231,24 @@ class OthelloGUI:
                 if get_possible_moves(self.board, "B"):
                     self.current_turn = "B"
                     self.highlight_possible_moves()
-                    self.Controller()  # Continue the game loop
+                    self.Controller()  
                 elif not get_possible_moves(self.board, "B") and get_possible_moves(self.board, "W"):
                     self.current_turn = "W"
-                    self.Controller()  # No possible moves for Black, switch to White's turn
+                    self.Controller()  
                 # else:
                 #     print("Game over")
 
     def human_turn(self, event):
-        if self.is_game_over(self.board):  # Check if the game is over
+        if self.is_game_over(self.board): 
             return
         if self.current_turn == "B":
             possible_moves = get_possible_moves(self.board, "B")
             if not possible_moves:
                 print("No possible moves for Black")
                 self.current_turn = 'W'
-                self.Controller()  # Continue the game loop
+                self.Controller()  
                 return
             else:
-                # Swap x and y because canvas coordinates are (y, x)
                 x, y = int(event.y // 62.5), int(event.x // 62.5)
                 if [x, y] in possible_moves:
                     make_move(self.board, "B", x, y)
@@ -260,7 +257,7 @@ class OthelloGUI:
                     self.human_discs += 1
                     self.update_scores()
                     self.current_turn = 'W'
-                    self.Controller()  # Continue the game loop
+                    self.Controller()  
                     return
 
     def get_computer_move(self):
