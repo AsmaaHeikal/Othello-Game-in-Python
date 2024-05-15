@@ -327,7 +327,7 @@ class OthelloGUI:
                 if beta <= alpha:
                     break
                 compScore = max(ev, compScore)
-                compMove.append(compScore)
+                compMove.append(ev)
                 compMove.append("_")
 
         elif isComputer == 0:
