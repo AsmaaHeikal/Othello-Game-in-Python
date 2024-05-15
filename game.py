@@ -220,16 +220,26 @@ def human_player(board, color):
     while True:
         possible_moves = get_possible_moves(board, color)
         print_possible_moves(board, color)
-        print(possible_moves)
+        print("Possible moves:", possible_moves)
+
         his_move = input("Your turn, enter your move (row and column numbers separated by space): ")
+
         try:
             x, y = map(int, his_move.split())
-            if (x, y) in possible_moves:
-                return x, y
-            else:
-                print("Invalid move please choose a move from the list of possible moves.")
         except ValueError:
-            print("Invalid input please enter row and column numbers separated by space.")
+            print("Invalid input. Please enter two numbers separated by a space.")
+            continue
+
+        if not is_on_board(x, y):
+            print("Invalid move. Coordinates are out of board range. Try again.")
+            continue
+
+        if (x, y) in [tuple(move) for move in possible_moves]:
+            return x, y
+        else:
+            print("Invalid move. Your move cannot flip any opposing disk. Try again.")
+            continue
+
 
 
 def othello_game():
