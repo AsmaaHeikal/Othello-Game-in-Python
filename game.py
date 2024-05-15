@@ -145,76 +145,56 @@ def boardEvaluation(board, color):
     return score
 
 
-def alpha_beta(board, color, depth, compMove=[[-1, -1]], compScore=-math.inf, move=[-1, -1], alpha=-math.inf,
-               beta=math.inf, isComputer=1):
-    validMoves = get_possible_moves(board, get_color(isComputer))
-    if make_move(board, color, move[0], move[1]) == False and move != [-1, -1]:
+
+def alpha_beta(board, color, depth, move, alpha=-math.inf, beta=math.inf, isComputer=0):
+    if move != [-1, -1] and not make_move(board, color, move[0], move[1]):
         return -math.inf
-
-    if depth <= 0 or is_game_over(board):  # or game over
+    
+    validMoves = get_possible_moves(board, get_color(isComputer))
+    if depth <= 0 or is_game_over(board):
         return boardEvaluation(board, color)
-
+    
     if isComputer == 1:
+        maxEval = -math.inf
         for i in validMoves:
-            # print("move white happen \n",depth,i)
             myboard = [row[:] for row in board]
-            compMove.extend([i])
-            ev = alpha_beta(myboard, 'W', depth - 1, compMove, compScore, [i[0], i[1]], alpha, beta, 0)
-            alpha = max(alpha, ev)
+            eval = alpha_beta(myboard, 'W', depth - 1, i, alpha, beta, 0)
+            maxEval = max(maxEval, eval)
+            alpha = max(alpha, eval)
             if beta <= alpha:
                 break
-            compScore = max(ev, compScore)
-            compMove.append(ev)
-            compMove.append("_")
+        return maxEval
 
-    elif isComputer == 0:
+    else:
+        minEval = math.inf
         for i in validMoves:
-            # print("move black happen \n", depth,i)
             myboard = [row[:] for row in board]
-            ev = alpha_beta(myboard, 'B', depth - 1, compMove, compScore, [i[0], i[1]], alpha, beta, 1)
-            beta = min(beta, ev)
+            eval = alpha_beta(myboard, 'B', depth - 1, i, alpha, beta, 1)
+            minEval = min(minEval, eval)
+            beta = min(beta, eval)
             if beta <= alpha:
                 break
-    return 0
-
-
+        return minEval
+    
+    
 def getCompMove(board, diffLevel):
-    moves = []
     myboard = [row[:] for row in board]
-    alpha_beta(myboard, 'W', diffLevel, moves)
-    print(len(moves))
-    maxiScore = -1000
-    if len(moves) <= 0:
+    moves = get_possible_moves(myboard, 'W')
+    
+    if not moves:
         return [-1, -1]
-    for i in range(len(moves)):
-        if isinstance(moves[i], int):
-            maxiScore = max(maxiScore, moves[i])
-            index = i
 
-    result = []
-    temp = []
-
-    for item in moves:
-        if item == '_':
-            result.append(temp)
-            temp = []
-        else:
-            temp.append(item)
-
-    result.append(temp)
-
-    cnt = -1
-    index = 0
-
-    for list in result:
-        cnt += 1
-        if len(list) > 1:
-            size = len(list)
-            if maxiScore < list[size - 1]:
-                maxiScore = list[size - 1]
-                index = cnt
-
-    return result[index][0]
+    bestScore = -math.inf
+    bestMove = None
+    
+    for move in moves:
+        score = alpha_beta(myboard, 'W', diffLevel, move, isComputer=1)
+        if score > bestScore:
+            bestScore = score
+            bestMove = move
+        myboard = [row[:] for row in board]
+    
+    return bestMove if bestMove else [-1, -1]
 
 def human_player(board, color):
     while True:

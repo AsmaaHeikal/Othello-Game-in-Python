@@ -260,80 +260,64 @@ class OthelloGUI:
         if difficulty == "Easy":
             return self.getCompMove(self.board, 1)
         elif difficulty == "Medium":
-            return self.getCompMove(self.board, 5)
+            return self.getCompMove(self.board, 3)
         elif difficulty == "Hard":
-            return self.getCompMove(self.board, 9)
+            return self.getCompMove(self.board, 5)
 
     def getCompMove(self, board, diffLevel):
-        moves = []
         myboard = [row[:] for row in board]
-        self.alpha_beta(myboard, 'W', diffLevel, moves)
-        maxiScore = -1000
-        if len(moves) <= 0:
+        moves = get_possible_moves(myboard, 'W')
+        
+        if not moves:
             return [-1, -1]
 
-        for i in range(len(moves)):
-            if isinstance(moves[i], int):
-                maxiScore = max(maxiScore, moves[i])
-                index = i
-
-        result = []
-        temp = []
-
-        for item in moves:
-            if item == '_':
-                result.append(temp)
-                temp = []
-            else:
-                temp.append(item)
-
-        result.append(temp)
-
-        cnt = -1
-        index = 0
-        for lst in result:
-            cnt += 1
-            if len(lst) > 1:
-                size = len(lst)
-                if maxiScore < lst[size - 1]:
-                    maxiScore = lst[size - 1]
-                    index = cnt
-
-        return result[index][0]
-
-    def alpha_beta(self, board, color, depth, compMove=[[-1, -1]], compScore=-math.inf, move=[-1, -1], alpha=-math.inf,
-                   beta=math.inf, isComputer=1):
-        validMoves = get_possible_moves(board, 'W')
-        if make_move(board, color, move[0], move[1]) == False and move != [-1, -1]:
+        bestScore = -math.inf
+        bestMove = None
+        
+        for move in moves:
+            score = self.alpha_beta(myboard, 'W', diffLevel, move, isComputer=1)
+            if score > bestScore:
+                bestScore = score
+                bestMove = move
+            myboard = [row[:] for row in board]
+    
+        return bestMove if bestMove else [-1, -1]
+    
+    def get_color(self, isComputer):
+        if isComputer == 1:
+            return 'W'
+        else:
+            return 'B'
+        
+    def alpha_beta(self,board, color, depth, move, alpha=-math.inf, beta=math.inf, isComputer=0):
+        if move != [-1, -1] and not make_move(board, color, move[0], move[1]):
             return -math.inf
-
+        
+        validMoves = get_possible_moves(board, self.get_color(isComputer))
         if depth <= 0 or self.is_game_over(board):
             return self.boardEvaluation(board)
-
+        
         if isComputer == 1:
+            maxEval = -math.inf
             for i in validMoves:
                 myboard = [row[:] for row in board]
-                tempBoard = [row[:] for row in board]
-                if make_move(tempBoard, 'W', i[0], i[1]) != False:
-                    compMove.extend([i])
-                ev = self.alpha_beta(
-                    myboard, 'W', depth - 1, compMove, compScore, [i[0], i[1]], alpha, beta, 0)
-                alpha = max(alpha, ev)
+                eval = self.alpha_beta(myboard, 'W', depth - 1, i, alpha, beta, 0)
+                maxEval = max(maxEval, eval)
+                alpha = max(alpha, eval)
                 if beta <= alpha:
                     break
-                compScore = max(ev, compScore)
-                compMove.append(ev)
-                compMove.append("_")
+            return maxEval
 
-        elif isComputer == 0:
+        else:
+            minEval = math.inf
             for i in validMoves:
                 myboard = [row[:] for row in board]
-                ev = self.alpha_beta(
-                    myboard, 'B', depth - 1, compMove, compScore, [i[0], i[1]], alpha, beta, 1)
-                beta = min(beta, ev)
+                eval = self.alpha_beta(myboard, 'B', depth - 1, i, alpha, beta, 1)
+                minEval = min(minEval, eval)
+                beta = min(beta, eval)
                 if beta <= alpha:
                     break
-        return 0
+            return minEval
 
 
 def main():
