@@ -267,9 +267,9 @@ class OthelloGUI:
         if difficulty == "Easy":
             return self.getCompMove(self.board, 1)
         elif difficulty == "Medium":
-            return self.getCompMove(self.board, 3)
-        elif difficulty == "Hard":
             return self.getCompMove(self.board, 5)
+        elif difficulty == "Hard":
+            return self.getCompMove(self.board, 9)
 
     def getCompMove(self, board, diffLevel):
         moves = []
