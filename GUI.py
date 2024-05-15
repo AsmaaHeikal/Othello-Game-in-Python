@@ -116,20 +116,18 @@ class OthelloGUI:
         self.difficulty_frame.pack()
 
         self.difficulty_label = tk.Label(
-        self.difficulty_frame, text="Choose difficulty:", font=("Helvetica", 16))
+            self.difficulty_frame, text="Choose difficulty:", font=("Helvetica", 16))
         self.difficulty_label.pack(side=tk.LEFT, padx=(20, 10))
 
         self.difficulty_menu = tk.OptionMenu(
-        self.difficulty_frame, self.difficulty_var, *self.difficulty_options)
+            self.difficulty_frame, self.difficulty_var, *self.difficulty_options)
         self.difficulty_menu.config(font=("Helvetica", 15))
-        self.difficulty_menu.pack(side=tk.LEFT, padx=(15, 15)) 
+        self.difficulty_menu.pack(side=tk.LEFT, padx=(15, 15))
 
         self.start_button = tk.Button(
-        self.main_frame, text="Start Game", command=self.start_game)
+            self.main_frame, text="Start Game", command=self.start_game)
         self.start_button.config(font=("Helvetica", 18))
-        self.start_button.pack(pady=(60, 40))  
-
-
+        self.start_button.pack(pady=(60, 40))
 
     def start_game(self):
         self.main_frame.destroy()
@@ -185,13 +183,11 @@ class OthelloGUI:
             for j in range(8):
                 if is_found_tiles_to_be_flipped(board, 'B', i, j) or is_found_tiles_to_be_flipped(board, 'W', i, j):
                     return False
-        return True
+        return True if not get_possible_moves(board, "B") and not get_possible_moves(board, "W") else False
 
     def boardEvaluation(self, board):
         score = get_score_of_board(board)["W"] - get_score_of_board(board)["B"]
         return score
-
-   
 
     def Controller(self):
         if self.is_game_over(self.board):
@@ -210,7 +206,7 @@ class OthelloGUI:
                 self.master, text=winner_text, font=("Helvetica", 20), fg="red")
             self.winner_label.pack()
             return
-    
+
         print("Game started")
         if self.current_turn == "B":
             print("Human's turn")
@@ -231,22 +227,22 @@ class OthelloGUI:
                 if get_possible_moves(self.board, "B"):
                     self.current_turn = "B"
                     self.highlight_possible_moves()
-                    self.Controller()  
+                    self.Controller()
                 elif not get_possible_moves(self.board, "B") and get_possible_moves(self.board, "W"):
                     self.current_turn = "W"
-                    self.Controller()  
-                # else:
+                    self.Controller()
+                    # else:
                 #     print("Game over")
 
     def human_turn(self, event):
-        if self.is_game_over(self.board): 
+        if self.is_game_over(self.board):
             return
         if self.current_turn == "B":
             possible_moves = get_possible_moves(self.board, "B")
             if not possible_moves:
                 print("No possible moves for Black")
                 self.current_turn = 'W'
-                self.Controller()  
+                self.Controller()
                 return
             else:
                 x, y = int(event.y // 62.5), int(event.x // 62.5)
@@ -257,7 +253,7 @@ class OthelloGUI:
                     self.human_discs += 1
                     self.update_scores()
                     self.current_turn = 'W'
-                    self.Controller()  
+                    self.Controller()
                     return
 
     def get_computer_move(self):
