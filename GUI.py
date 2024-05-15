@@ -320,7 +320,9 @@ class OthelloGUI:
         if isComputer == 1:
             for i in validMoves:
                 myboard = [row[:] for row in board]
-                compMove.extend([i])
+                tempBoard = [row[:] for row in board]
+                if make_move(tempBoard, 'W', i[0], i[1]) != False:
+                    compMove.extend([i])
                 ev = self.alpha_beta(
                     myboard, 'W', depth - 1, compMove, compScore, [i[0], i[1]], alpha, beta, 0)
                 alpha = max(alpha, ev)
