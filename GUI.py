@@ -208,12 +208,9 @@ class OthelloGUI:
             self.winner_label.pack()
             return
 
-        print("Game started")
         if self.current_turn == "B":
-            print("Human's turn")
             self.canvas.bind('<Button-1>', self.human_turn)
         else:
-            print("Computer's turn")
             self.master.update_idletasks()
             self.master.update()
             self.canvas.after(1000)
@@ -234,8 +231,7 @@ class OthelloGUI:
                     # Human has no valid moves, end the game
                     self.current_turn = "W"
                     self.Controller()
-                    # else:
-                #     print("Game over")
+                    
 
     def human_turn(self, event):
         if self.is_game_over(self.board):
@@ -243,7 +239,6 @@ class OthelloGUI:
         if self.current_turn == "B":
             possible_moves = get_possible_moves(self.board, "B")
             if not possible_moves:
-                print("No possible moves for Black")
                 self.current_turn = 'W'
                 self.Controller()
                 return
@@ -260,7 +255,6 @@ class OthelloGUI:
                     return
 
     def get_computer_move(self):
-        # possible_moves = get_possible_moves(self.board, 'W')
         difficulty = self.difficulty_var.get()
 
         if difficulty == "Easy":
